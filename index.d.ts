@@ -511,6 +511,7 @@ declare namespace Eris {
     agent?: HTTPSAgent;
     allowedMentions?: AllowedMentions;
     autoreconnect?: boolean;
+    cache?: CacheOptions;
     compress?: boolean;
     connectionTimeout?: number;
     defaultImageFormat?: string;
@@ -538,6 +539,16 @@ declare namespace Eris {
     seedVoiceConnections?: boolean;
     shardConcurrency?: number | "auto";
     ws?: unknown;
+  }
+  interface CacheOptions {
+    members?: {
+      limit?: number | null;
+      filter?: (member: Member) => boolean | undefined;
+    } | false;
+    channels?: {
+      limit?: number | null;
+      filter?: (channel: Channel) => boolean | undefined;
+    } | false;
   }
   interface CommandClientOptions {
     argsSplitter?: (str: string) => string[];
@@ -909,7 +920,7 @@ declare namespace Eris {
     channelDelete: [channel: Exclude<AnyChannel, GroupChannel>];
     channelPinUpdate: [channel: TextableChannel, timestamp: number, oldTimestamp: number];
     channelUpdate: [channel: AnyGuildChannel, oldChannel: OldGuildChannel | OldForumChannel | OldGuildTextChannel | OldVoiceChannel]
-      | [channel: GroupChannel, oldChannel: OldGroupChannel];
+    | [channel: GroupChannel, oldChannel: OldGroupChannel];
     connect: [id: number];
     debug: [message: string, id?: number];
     disconnect: [];
@@ -971,7 +982,7 @@ declare namespace Eris {
     threadMemberUpdate: [channel: AnyThreadChannel, member: ThreadMember, oldMember: OldThreadMember];
     threadUpdate: [channel: AnyThreadChannel, oldChannel: OldThread | null];
     typingStart: [channel: AnyGuildTextableChannel | Uncached, user: PossiblyUncachedUser, member: Member]
-      | [channel: DMChannel | Uncached, user: PossiblyUncachedUser, member: null];
+    | [channel: DMChannel | Uncached, user: PossiblyUncachedUser, member: null];
     unavailableGuildCreate: [guild: UnavailableGuild];
     unknown: [packet: RawPacket, id?: number];
     userUpdate: [user: User, oldUser: PartialUser | null];
@@ -2255,8 +2266,9 @@ declare namespace Eris {
     editChannelPosition(channelID: string, position: number, options?: EditChannelPositionOptions): Promise<void>;
     editChannelPositions(guildID: string, channelPositions: ChannelPosition[]): Promise<void>;
     editCommand<T extends ApplicationCommandTypes>(commandID: string, command: ApplicationCommandEditOptions<false, T>): Promise<ApplicationCommand<false, T>>;
-    editEmoji(emojiID: string, options: EditApplicationEmojiOptions): Promise<Emoji>;
     editCommandPermissions(guildID: string, commandID: string, permissions: ApplicationCommandPermissions[], reason?: string): Promise<GuildApplicationCommandPermissions>;
+    editEmoji(emojiID: string, options: EditApplicationEmojiOptions): Promise<Emoji>;
+
     editGuild(guildID: string, options: GuildOptions, reason?: string): Promise<Guild>;
     editGuildCommand<T extends ApplicationCommandTypes>(guildID: string, commandID: string, command: ApplicationCommandEditOptions<true, T>): Promise<ApplicationCommand<true, T>>;
     editGuildDiscovery(guildID: string, options?: DiscoveryOptions): Promise<DiscoveryMetadata>;
@@ -2322,8 +2334,9 @@ declare namespace Eris {
     getDiscoveryCategories(): Promise<DiscoveryCategory[]>;
     getDMChannel(userID: string): Promise<DMChannel>;
     getEmoji(emojiID: string): Promise<Emoji>;
-    getEmojis(): Promise<ApplicationEmojis>;
     getEmojiGuild(emojiID: string): Promise<Guild>;
+    getEmojis(): Promise<ApplicationEmojis>;
+
     getGateway(): Promise<{ url: string }>;
     getGuildAuditLog(guildID: string, options?: GetGuildAuditLogOptions): Promise<GuildAuditLog>;
     /** @deprecated */
